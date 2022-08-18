@@ -109,3 +109,9 @@ variable "bucket_force_destroy" {
   default     = true
   description = "Force destroy bucket (Required when bucket not empty)"
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "A map/dictionary of Tags to be assigned to created resources"
+  default     = {}
+}

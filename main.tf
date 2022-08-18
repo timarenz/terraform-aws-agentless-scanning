@@ -256,10 +256,14 @@ resource "aws_iam_role" "agentless_scan_ecs_task_role" {
       },
     ]
   })
-  tags = {
-    Name           = "${var.resource_name_prefix}-task-role-${local.resource_name_suffix}"
-    LWTAG_SIDEKICK = "1"
-  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name           = "${var.resource_name_prefix}-task-role-${local.resource_name_suffix}"
+      LWTAG_SIDEKICK = "1"
+    }
+  )
 }
 
 // AWS::IAM::Role
@@ -282,10 +286,14 @@ resource "aws_iam_role" "agentless_scan_ecs_event_role" {
       },
     ]
   })
-  tags = {
-    Name           = "${var.resource_name_prefix}-task-event-role-${local.resource_name_suffix}"
-    LWTAG_SIDEKICK = "1"
-  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name           = "${var.resource_name_prefix}-task-event-role-${local.resource_name_suffix}"
+      LWTAG_SIDEKICK = "1"
+    }
+  )
 }
 // AWS::IAM::Role
 resource "aws_iam_role" "agentless_scan_ecs_execution_role" {
@@ -321,10 +329,13 @@ resource "aws_iam_role" "agentless_scan_ecs_execution_role" {
     })
   }
 
-  tags = {
-    Name           = "${var.resource_name_prefix}-task-execution-role-${local.resource_name_suffix}"
-    LWTAG_SIDEKICK = "1"
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name           = "${var.resource_name_prefix}-task-execution-role-${local.resource_name_suffix}"
+      LWTAG_SIDEKICK = "1"
+    }
+  )
 }
 
 // AWS::S3::Bucket
@@ -334,9 +345,12 @@ resource "aws_s3_bucket" "agentless_scan_bucket" {
 
   force_destroy = var.bucket_force_destroy
 
-  tags = {
-    LWTAG_SIDEKICK = "1"
-  }
+  tags = merge(
+    var.tags,
+    {
+      LWTAG_SIDEKICK = "1"
+    }
+  )
 }
 
 resource "aws_s3_bucket_versioning" "versioning_example" {
@@ -481,10 +495,13 @@ resource "aws_iam_role" "agentless_scan_cross_account_role" {
     policy = data.aws_iam_policy_document.cross_account_inline_policy_ecs[0].json
   }
 
-  tags = {
-    Name           = "${var.resource_name_prefix}-cross-account-role-${local.resource_name_suffix}"
-    LWTAG_SIDEKICK = "1"
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name           = "${var.resource_name_prefix}-cross-account-role-${local.resource_name_suffix}"
+      LWTAG_SIDEKICK = "1"
+    }
+  )
 }
 
 
@@ -499,20 +516,27 @@ resource "aws_vpc" "agentless_scan_vpc" {
   enable_dns_hostnames = true
   instance_tenancy     = "default"
 
-  tags = {
-    Name           = "${var.resource_name_prefix}-vpc-${local.resource_name_suffix}"
-    LWTAG_SIDEKICK = "1"
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name           = "${var.resource_name_prefix}-vpc-${local.resource_name_suffix}"
+      LWTAG_SIDEKICK = "1"
+    }
+  )
 }
 
 // RouteTable
 resource "aws_route_table" "agentless_scan_route_table" {
   count  = var.regional ? 1 : 0
   vpc_id = aws_vpc.agentless_scan_vpc[0].id
-  tags = {
-    Name           = "${var.resource_name_prefix}-vpc-${local.resource_name_suffix}"
-    LWTAG_SIDEKICK = "1"
-  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name           = "${var.resource_name_prefix}-vpc-${local.resource_name_suffix}"
+      LWTAG_SIDEKICK = "1"
+    }
+  )
 }
 
 // SubnetRouteTableAsccociation
@@ -527,10 +551,13 @@ resource "aws_internet_gateway" "agentless_scan_gateway" {
   count  = var.regional ? 1 : 0
   vpc_id = aws_vpc.agentless_scan_vpc[0].id
 
-  tags = {
-    Name           = "${var.resource_name_prefix}-vpc-${local.resource_name_suffix}"
-    LWTAG_SIDEKICK = "1"
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name           = "${var.resource_name_prefix}-vpc-${local.resource_name_suffix}"
+      LWTAG_SIDEKICK = "1"
+    }
+  )
 }
 
 // Route
@@ -560,11 +587,13 @@ resource "aws_subnet" "agentless_scan_public_subnet" {
   cidr_block              = "10.10.1.0/24"
   map_public_ip_on_launch = false
 
-
-  tags = {
-    Name           = "${var.resource_name_prefix}-vpc-${local.resource_name_suffix}"
-    LWTAG_SIDEKICK = "1"
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name           = "${var.resource_name_prefix}-vpc-${local.resource_name_suffix}"
+      LWTAG_SIDEKICK = "1"
+    }
+  )
 }
 
 // Capacity Providers
@@ -579,10 +608,13 @@ resource "aws_ecs_cluster" "agentless_scan_ecs_cluster" {
   count = var.regional ? 1 : 0
   name  = "${var.resource_name_prefix}-cluster-${local.resource_name_suffix}"
 
-  tags = {
-    Name           = "${var.resource_name_prefix}-vpc-${local.resource_name_suffix}"
-    LWTAG_SIDEKICK = "1"
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name           = "${var.resource_name_prefix}-vpc-${local.resource_name_suffix}"
+      LWTAG_SIDEKICK = "1"
+    }
+  )
 }
 
 // TaskDefinition
@@ -597,10 +629,13 @@ resource "aws_ecs_task_definition" "agentless_scan_task_definition" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = 4096
   memory                   = 8192
-  tags = {
-    Name           = "${var.resource_name_prefix}-task-definition-${local.resource_name_suffix}"
-    LWTAG_SIDEKICK = "1"
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name           = "${var.resource_name_prefix}-task-definition-${local.resource_name_suffix}"
+      LWTAG_SIDEKICK = "1"
+    }
+  )
   container_definitions = jsonencode([
     {
       name      = "sidekick"
@@ -696,8 +731,11 @@ resource "aws_cloudwatch_event_target" "agentless_scan_event_target" {
       security_groups  = [aws_vpc.agentless_scan_vpc[0].default_security_group_id]
       assign_public_ip = true
     }
-    tags = {
-      LWTAG_SIDEKICK = "1"
-    }
+    tags = merge(
+      var.tags,
+      {
+        LWTAG_SIDEKICK = "1"
+      }
+    )
   }
 }
